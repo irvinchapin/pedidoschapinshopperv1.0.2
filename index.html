@@ -237,8 +237,11 @@
         
         // Regla de envío: Solo Guatemala/Guatemala paga Q25, resto Q35
         let envio = 35;
-        if (d === "GUATEMALA" && m === "GUATEMALA") {
-            envio = 25;
+        if(
+        d.trim().toUpperCase()==="GUATEMALA" &&
+        m.trim().toUpperCase()==="GUATEMALA"
+        ){
+        envio=25;
         }
         if (!d) envio = 0; // Si no ha elegido depto, mostramos 0
 
@@ -306,4 +309,5 @@
 
 </body>
 </html>
+
 
