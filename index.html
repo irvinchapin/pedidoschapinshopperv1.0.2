@@ -3,48 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Interno v1.0.2</title>
+    <title>Sistema Interno de Pedidos</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        body { background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px 10px; }
-        .card { max-width: 600px; margin: auto; border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .hidden { display: none !important; }
-        .login-screen { padding: 40px 20px; text-align: center; }
-        .result-box { background: #fff; padding: 25px; border-radius: 10px; border: 1px solid #ccc; line-height: 1.6; }
-        hr { border-top: 2px dashed #bbb; }
-        b { color: #000; }
+        body { background-color: #f0f2f5; font-family: sans-serif; padding: 20px 10px; }
+        .card { max-width: 600px; margin: auto; border: none; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .btn-ingresar { background-color: #007bff; border: none; font-weight: bold; padding: 12px; }
+        .hidden { display: none; }
+        .result-box { background: #fff; padding: 20px; border-radius: 10px; border: 1px solid #ddd; }
+        label { font-weight: 600; font-size: 0.9rem; color: #444; }
     </style>
 </head>
 <body>
 
-<div id="pantallaLogin" class="card login-screen">
-    <h3>🔐 Acceso Restringido</h3>
-    <p class="text-muted">Ingrese el código de seguridad para continuar</p>
-    <input type="password" id="passInput" class="form-control mb-3 text-center" placeholder="Contraseña">
-    <button onclick="verificarPass()" class="btn btn-primary w-100">Entrar</button>
-</div>
-
-<div id="contenidoApp" class="card p-4 hidden">
-    
+<div class="card p-4" id="contenedorPrincipal">
     <div id="pantallaFormulario">
-        <h3 class="text-center mb-4 text-primary">Ingreso de Pedidos</h3>
+        <h3 class="text-center mb-4">Nuevo Pedido</h3>
         <form id="formPedido">
             <div class="row">
                 <div class="col-6 mb-3">
-                    <label class="form-label">NOMBRE *</label>
+                    <label>NOMBRE *</label>
                     <input type="text" id="nombre" class="form-control" required>
                 </div>
                 <div class="col-6 mb-3">
-                    <label class="form-label">APELLIDO *</label>
+                    <label>APELLIDO *</label>
                     <input type="text" id="apellido" class="form-control" required>
                 </div>
             </div>
 
             <div class="mb-3">
-                <label class="form-label">ARTÍCULO *</label>
+                <label>ARTÍCULO *</label>
                 <select id="articulo" class="form-select" required onchange="actualizarPrecio()">
-                    <option value="" disabled selected>Seleccione artículo...</option>
+                    <option value="" disabled selected>Seleccione un artículo...</option>
                     <option value="COMBO BOCINA Y AUDIFONOS" data-precio="69">COMBO BOCINA Y AUDIFONOS - Q69</option>
                     <option value="COMBO BOCINA Y G63" data-precio="99">COMBO BOCINA Y G63 - Q99</option>
                     <option value="AUDIFONOS CON PANTALLA" data-precio="68">AUDIFONOS CON PANTALLA - Q68</option>
@@ -52,27 +43,35 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label">CANTIDAD *</label>
+                <label>CANTIDAD *</label>
                 <input type="number" id="cantidad" class="form-control" min="1" value="1" required onchange="actualizarPrecio()">
             </div>
 
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <label>DEPARTAMENTO *</label>
-                    <select id="depto" class="form-select" required onchange="filtrarMunicipios()"><option value="">...</option></select>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label>MUNICIPIO *</label>
-                    <select id="muni" class="form-select" required disabled onchange="filtrarPoblados()"><option value="">...</option></select>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label>POBLADO *</label>
-                    <select id="poblado" class="form-select" required disabled><option value="">...</option></select>
-                </div>
+            <hr>
+
+            <div class="mb-3">
+                <label>DEPARTAMENTO *</label>
+                <select id="depto" class="form-select" required onchange="filtrarMunicipios()">
+                    <option value="">Seleccione...</option>
+                </select>
             </div>
 
             <div class="mb-3">
-                <label>DIRECCIÓN EXACTA *</label>
+                <label>MUNICIPIO *</label>
+                <select id="muni" class="form-select" required disabled onchange="filtrarPoblados()">
+                    <option value="">Seleccione...</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label>POBLADO *</label>
+                <select id="poblado" class="form-select" required disabled>
+                    <option value="">Seleccione...</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label>DIRECCIÓN *</label>
                 <input type="text" id="direccion" class="form-control" required>
             </div>
 
@@ -92,97 +91,94 @@
                 <textarea id="notas" class="form-control" rows="2"></textarea>
             </div>
 
-            <div class="alert alert-info d-flex justify-content-between fs-5">
+            <div class="alert alert-secondary d-flex justify-content-between">
                 <span>Envío: <b id="envioTxt">Q0</b></span>
                 <span>Total: <b id="totalTxt">Q0</b></span>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 py-3 fw-bold">INGRESAR PEDIDO</button>
+            <button type="submit" class="btn btn-primary w-100 btn-ingresar">INGRESAR</button>
         </form>
     </div>
 
     <div id="pantallaExito" class="hidden text-center">
-        <div class="alert alert-success fw-bold">✅ Pedido ingresado satisfactoriamente</div>
+        <div class="alert alert-success">
+            <h5>✅ Pedido ingresado satisfactoriamente</h5>
+        </div>
         
         <div id="areaImpresion" class="result-box text-start mb-4">
-            <h4 class="text-center mb-3">COMPROBANTE DE PEDIDO</h4>
-            <p><b>FECHA:</b> <span id="resFecha"></span></p>
-            <p><b>CLIENTE:</b> <span id="resNombre"></span></p>
-            <hr>
-            <p><b>PRODUCTO:</b> <span id="resArt"></span></p>
-            <p><b>CANTIDAD:</b> <span id="resCant"></span></p>
-            <p><b>DESTINO:</b> <span id="resUbi"></span></p>
-            <p><b>DIRECCIÓN:</b> <span id="resDir"></span></p>
-            <p><b>TELÉFONOS:</b> <span id="resTels"></span></p>
-            <p><b>INDICACIONES:</b> <span id="resNotas"></span></p>
-            <hr>
-            <h4 class="text-end text-primary">TOTAL: <span id="resTotal"></span></h4>
+            <h4 class="text-center border-bottom pb-2">RESUMEN DE PEDIDO</h4>
+            <p><strong>CLIENTE:</strong> <span id="resNombre"></span></p>
+            <p><strong>ARTÍCULO:</strong> <span id="resArt"></span></p>
+            <p><strong>CANTIDAD:</strong> <span id="resCant"></span></p>
+            <p><strong>UBICACIÓN:</strong> <span id="resUbi"></span></p>
+            <p><strong>DIRECCIÓN:</strong> <span id="resDir"></span></p>
+            <p><strong>TELÉFONOS:</strong> <span id="resTels"></span></p>
+            <p><strong>INDICACIONES:</strong> <span id="resNotas"></span></p>
+            <h5 class="mt-3 text-end">TOTAL A PAGAR: <span id="resTotal"></span></h5>
         </div>
 
-        <button onclick="descargarPDF()" class="btn btn-danger w-100 mb-2 py-2">📄 Guardar PDF</button>
-        <button onclick="enviarWhatsApp()" class="btn btn-success w-100 mb-2 py-2">💬 Compartir en WhatsApp</button>
-        <button onclick="location.reload()" class="btn btn-outline-secondary w-100">Nuevo Pedido</button>
+        <button onclick="descargarPDF()" class="btn btn-danger w-100 mb-2">Guardar PDF</button>
+        <button onclick="enviarWhatsApp()" class="btn btn-success w-100 mb-2">Compartir en WhatsApp</button>
+        <button onclick="location.reload()" class="btn btn-outline-secondary w-100">Hacer otro pedido</button>
     </div>
 </div>
 
 <script>
-    // CONFIGURACIÓN
-    const CLAVE_ACCESO = "1234"; // CAMBIA TU CONTRASEÑA AQUÍ
+    // --- BASE DE DATOS INTEGRADA (Resumen del CSV) ---
+    // Nota: Por espacio, aquí se cargará la lógica. El navegador procesará el CSV que subiste.
     let datosGuate = [];
 
-    function verificarPass() {
-        const input = document.getElementById('passInput').value;
-        if(input === CLAVE_ACCESO) {
-            document.getElementById('pantallaLogin').classList.add('hidden');
-            document.getElementById('contenidoApp').classList.remove('hidden');
-            cargarDatos();
-        } else {
-            alert("Contraseña incorrecta");
-        }
-    }
-
-    // Corrección de tildes para el archivo CSV subido
-    function limpiarTexto(t) {
-        if(!t) return "";
-        return t.replace(/‡/g, 'á').replace(/‚/g, 'é').replace(/‹/g, 'í')
-                .replace(/ /g, 'ó').replace(/⁄/g, 'ú').replace(//g, 'ñ').trim();
-    }
-
+    // Función para cargar los datos desde el archivo que subiste
     async function cargarDatos() {
         try {
             const response = await fetch('Guatemala.csv');
             const text = await response.text();
             const filas = text.split('\n').slice(1);
+            
             filas.forEach(f => {
-                const col = f.split(';');
-                if(col.length >= 3) {
-                    datosGuate.push({ d: limpiarTexto(col[0]), m: limpiarTexto(col[1]), p: limpiarTexto(col[2]) });
+                const columnas = f.split(';');
+                if(columnas.length >= 3) {
+                    datosGuate.push({
+                        d: columnas[0].trim(),
+                        m: columnas[1].trim(),
+                        p: columnas[2].trim()
+                    });
                 }
             });
+
             const deptos = [...new Set(datosGuate.map(x => x.d))].sort();
-            const s = document.getElementById('depto');
-            deptos.forEach(d => { if(d) s.add(new Option(d, d)); });
-        } catch (e) { alert("Error cargando base de datos."); }
+            const selectDepto = document.getElementById('depto');
+            deptos.forEach(d => {
+                if(d) selectDepto.add(new Option(d, d));
+            });
+        } catch (e) {
+            alert("Error: Asegúrate de que el archivo 'Guatemala.csv' esté en la misma carpeta.");
+        }
     }
 
     function filtrarMunicipios() {
-        const d = document.getElementById('depto').value;
-        const mS = document.getElementById('muni');
-        mS.innerHTML = '<option value="">Seleccione...</option>';
-        const munis = [...new Set(datosGuate.filter(x => x.d === d).map(x => x.m))].sort();
-        munis.forEach(m => mS.add(new Option(m, m)));
-        mS.disabled = false;
+        const dSel = document.getElementById('depto').value;
+        const muniSelect = document.getElementById('muni');
+        muniSelect.innerHTML = '<option value="">Seleccione...</option>';
+        
+        const munis = [...new Set(datosGuate.filter(x => x.d === dSel).map(x => x.m))].sort();
+        munis.forEach(m => muniSelect.add(new Option(m, m)));
+        
+        muniSelect.disabled = false;
+        document.getElementById('poblado').disabled = true;
         actualizarPrecio();
     }
 
     function filtrarPoblados() {
-        const d = document.getElementById('depto').value;
-        const m = document.getElementById('muni').value;
-        const pS = document.getElementById('poblado');
-        pS.innerHTML = '<option value="">Seleccione...</option>';
-        const pobs = [...new Set(datosGuate.filter(x => x.d === d && x.m === m).map(x => x.p))].sort();
-        pobs.forEach(p => pS.add(new Option(p, p)));
-        pS.disabled = false;
+        const dSel = document.getElementById('depto').value;
+        const mSel = document.getElementById('muni').value;
+        const pobSelect = document.getElementById('poblado');
+        pobSelect.innerHTML = '<option value="">Seleccione...</option>';
+        
+        const pobs = [...new Set(datosGuate.filter(x => x.d === dSel && x.m === mSel).map(x => x.p))].sort();
+        pobs.forEach(p => pobSelect.add(new Option(p, p)));
+        
+        pobSelect.disabled = false;
         actualizarPrecio();
     }
 
@@ -191,55 +187,71 @@
         const cant = document.getElementById('cantidad').value;
         const d = document.getElementById('depto').value;
         const m = document.getElementById('muni').value;
+
         if(!art.value) return;
-        let pArt = parseFloat(art.options[art.selectedIndex].getAttribute('data-precio'));
+
+        let precioArt = parseFloat(art.options[art.selectedIndex].getAttribute('data-precio'));
         let envio = (d === "GUATEMALA" && m === "GUATEMALA") ? 25 : 35;
         if (!d) envio = 0;
+
+        let total = (precioArt * cant) + envio;
         document.getElementById('envioTxt').innerText = "Q" + envio;
-        document.getElementById('totalTxt').innerText = "Q" + (pArt * cant + envio);
+        document.getElementById('totalTxt').innerText = "Q" + total;
     }
 
-    let msgWA = "";
+    // MANEJO DE ENVÍO
+    let mensajeWA = "";
+
     document.getElementById('formPedido').onsubmit = function(e) {
         e.preventDefault();
-        const nom = document.getElementById('nombre').value.toUpperCase() + " " + document.getElementById('apellido').value.toUpperCase();
+        
+        const nombreCompleto = document.getElementById('nombre').value.toUpperCase() + " " + document.getElementById('apellido').value.toUpperCase();
+        const art = document.getElementById('articulo').value;
+        const cant = document.getElementById('cantidad').value;
         const ubi = `${document.getElementById('depto').value}, ${document.getElementById('muni').value}, ${document.getElementById('poblado').value}`;
+        const dir = document.getElementById('direccion').value;
         const tels = document.getElementById('tel1').value + (document.getElementById('tel2').value ? " / " + document.getElementById('tel2').value : "");
-        const f = new Date();
-        const fechaStr = f.getDate() + "/" + (f.getMonth()+1) + "/" + f.getFullYear();
+        const notas = document.getElementById('notas').value || "Sin indicaciones";
+        const total = document.getElementById('totalTxt').innerText;
 
-        document.getElementById('resFecha').innerText = fechaStr;
-        document.getElementById('resNombre').innerText = nom;
-        document.getElementById('resArt').innerText = document.getElementById('articulo').value;
-        document.getElementById('resCant').innerText = document.getElementById('cantidad').value;
+        // Llenar pantalla de éxito
+        document.getElementById('resNombre').innerText = nombreCompleto;
+        document.getElementById('resArt').innerText = art;
+        document.getElementById('resCant').innerText = cant;
         document.getElementById('resUbi').innerText = ubi;
-        document.getElementById('resDir').innerText = document.getElementById('direccion').value;
+        document.getElementById('resDir').innerText = dir;
         document.getElementById('resTels').innerText = tels;
-        document.getElementById('resNotas').innerText = document.getElementById('notas').value || "Ninguna";
-        document.getElementById('resTotal').innerText = document.getElementById('totalTxt').innerText;
+        document.getElementById('resNotas').innerText = notas;
+        document.getElementById('resTotal').innerText = total;
 
-        msgWA = `*NUEVO PEDIDO - ${fechaStr}*%0A` +
-                `*CLIENTE:* ${nom}%0A` +
-                `*ARTÍCULO:* ${document.getElementById('articulo').value}%0A` +
-                `*CANTIDAD:* ${document.getElementById('cantidad').value}%0A` +
-                `*UBICACIÓN:* ${ubi}%0A` +
-                `*DIRECCIÓN:* ${document.getElementById('direccion').value}%0A` +
-                `*TELÉFONOS:* ${tels}%0A` +
-                `*TOTAL:* ${document.getElementById('totalTxt').innerText}`;
+        // Preparar texto WhatsApp
+        mensajeWA = `*NUEVO PEDIDO*%0A` +
+                    `*CLIENTE:* ${nombreCompleto}%0A` +
+                    `*ARTÍCULO:* ${art}%0A` +
+                    `*CANTIDAD:* ${cant}%0A` +
+                    `*UBICACIÓN:* ${ubi}%0A` +
+                    `*DIRECCIÓN:* ${dir}%0A` +
+                    `*TELÉFONOS:* ${tels}%0A` +
+                    `*NOTAS:* ${notas}%0A` +
+                    `*TOTAL:* ${total}`;
 
         document.getElementById('pantallaFormulario').classList.add('hidden');
         document.getElementById('pantallaExito').classList.remove('hidden');
     };
 
     function descargarPDF() {
-        const el = document.getElementById('areaImpresion');
-        const opt = { margin: 10, filename: 'Pedido.pdf', html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
-        html2pdf().set(opt).from(el).save();
+        const elemento = document.getElementById('areaImpresion');
+        html2pdf().from(elemento).save('Pedido_'+document.getElementById('resNombre').innerText+'.pdf');
     }
 
     function enviarWhatsApp() {
-        window.open(`https://wa.me/?text=${msgWA}`, '_blank');
+        // Reemplaza el número abajo con el número de la empresa (ej: 50212345678)
+        const numeroEmpresa = "502"; 
+        window.open(`https://wa.me/${numeroEmpresa}?text=${mensajeWA}`, '_blank');
     }
+
+    window.onload = cargarDatos;
 </script>
+
 </body>
 </html>
